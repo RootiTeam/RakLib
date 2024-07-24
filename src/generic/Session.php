@@ -62,6 +62,8 @@ abstract class Session{
 
 	private int $lastPingMeasure = 1;
 
+	private int $protocolVersion;
+
 	private ReceiveReliabilityLayer $recvLayer;
 
 	private SendReliabilityLayer $sendLayer;
@@ -75,6 +77,7 @@ abstract class Session{
 		InternetAddress $address,
 		int $clientId,
 		int $mtuSize,
+		int $protocolVersion,
 		int $recvMaxSplitParts = PHP_INT_MAX,
 		int $recvMaxConcurrentSplits = PHP_INT_MAX
 	){
@@ -84,6 +87,7 @@ abstract class Session{
 		$this->logger = new \PrefixedLogger($logger, "Session: " . $address->toString());
 		$this->address = $address;
 		$this->id = $clientId;
+		$this->protocolVersion = $protocolVersion;
 
 		$this->lastUpdate = microtime(true);
 
@@ -169,6 +173,10 @@ abstract class Session{
 
 	public function getState() : int{
 		return $this->state;
+	}
+
+	public function getProtocolVersion() : int{
+		return $this->protocolVersion;
 	}
 
 	public function isTemporary() : bool{

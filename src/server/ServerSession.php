@@ -41,12 +41,13 @@ class ServerSession extends Session{
 		int $clientId,
 		int $mtuSize,
 		int $internalId,
+		int $protocolVersion,
 		int $recvMaxSplitParts = self::DEFAULT_MAX_SPLIT_PART_COUNT,
 		int $recvMaxConcurrentSplits = self::DEFAULT_MAX_CONCURRENT_SPLIT_COUNT
 	){
 		$this->server = $server;
 		$this->internalId = $internalId;
-		parent::__construct($logger, $address, $clientId, $mtuSize, $recvMaxSplitParts, $recvMaxConcurrentSplits);
+		parent::__construct($logger, $address, $clientId, $mtuSize, $protocolVersion, $recvMaxSplitParts, $recvMaxConcurrentSplits);
 	}
 
 	/**

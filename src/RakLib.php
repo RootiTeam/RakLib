@@ -17,6 +17,9 @@ declare(strict_types=1);
 namespace raklib;
 
 abstract class RakLib{
+	
+	public const VERSION = '1.1.1';
+
 	/**
 	 * Default vanilla RakNet protocol version that this library implements. Things using RakLib can override this
 	 * protocol version with something different.

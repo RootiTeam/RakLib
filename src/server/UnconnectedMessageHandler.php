@@ -43,6 +43,8 @@ class UnconnectedMessageHandler{
 	 */
 	private \SplFixedArray $packetPool;
 
+	private array $unconnectedSessions = [];
+
 	public function __construct(
 		private Server $server,
 		private ProtocolAcceptor $protocolAcceptor
@@ -83,6 +85,7 @@ class UnconnectedMessageHandler{
 			}else{
 				//IP header size (20 bytes) + UDP header size (8 bytes)
 				$this->server->sendPacket(OpenConnectionReply1::create($this->server->getID(), false, $packet->mtuSize + 28), $address);
+				$this->unconnectedSessions[(string)$address] = $packet->protocol;
 			}
 		}elseif($packet instanceof OpenConnectionRequest2){
 			if($packet->serverAddress->getPort() === $this->server->getPort() or !$this->server->portChecking){
@@ -99,7 +102,9 @@ class UnconnectedMessageHandler{
 				}
 				$mtuSize = min($packet->mtuSize, $this->server->getMaxMtuSize()); //Max size, do not allow creating large buffers to fill server memory
 				$this->server->sendPacket(OpenConnectionReply2::create($this->server->getID(), $address, $mtuSize, false), $address);
-				$this->server->createSession($address, $packet->clientID, $mtuSize);
+				$this->server->createSession($address, $packet->clientID, $mtuSize, $this->unconnectedSessions[(string)$address]);
+
+				unset($this->unconnectedSessions[(string)$address]);
 			}else{
 				$this->server->getLogger()->debug("Not creating session for $address due to mismatched port, expected " . $this->server->getPort() . ", got " . $packet->serverAddress->getPort());
 			}
